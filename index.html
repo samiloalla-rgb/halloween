@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="nn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>KNASK ELLER KNEP! - Lær norske ord!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        body {
+            font-family: 'Nunito', Arial, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Single Background */
+        .bg-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+
+        .screen {
+            display: none;
+            min-height: 100vh;
+            padding: 15px;
+            animation: fadeIn 0.5s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Home button */
+        .home-btn {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 45px;
+            height: 45px;
+            background: #FFF8E8;
+            border: 3px solid #111111;
+            border-radius: 12px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 1000;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .home-btn:hover {
+            transform: scale(1.1);
+            background: #FF9418;
+        }
+
+        .home-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Start Screen */
+        .start-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+        }
+
+        /* Заголовок в стиле референса */
+        .main-title {
+            font-family: 'Nunito', Arial, sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #FFFFFF;
+            text-shadow: 
+                3px 3px 0 #111111,
+                -3px -3px 0 #111111,
+                3px -3px 0 #111111,
+                -3px 3px 0 #111111,
+                0 3px 0 #111111,
+                0 -3px 0 #111111,
+                3px 0 0 #111111,
+                -3px 0 0 #111111,
+                5px 5px 8px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #FF9418 0%, #FFB52E 100%);
+            padding: 10px 25px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            animation: float 3s ease-in-out infinite;
+            text-align: center;
+            line-height: 1.1;
+            letter-spacing: 1px;
+            -webkit-text-stroke: 2px #111111;
+            paint-order: stroke fill;
+            white-space: nowrap;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #111111;
+            background: #FFF8E8;
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .name-input-container {
+            background: #FFF8E8;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 350px;
+            margin-bottom: 20px;
+        }
+
+        .name-input-container h2 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #111111;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .name-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            font-family: 'Nunito', Arial, sans-serif;
+            font-weight: 600;
+            border: 3px solid #FF9418;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 10px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .name-input:focus {
+            border-color: #6B3FA0;
+            transform: scale(1.02);
+        }
+
+        .welcome-message {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #6B3FA0;
+            text-align: center;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* Level Select Buttons */
+        .level-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .level-btn {
+            padding: 18px 30px;
+            font-size: 1.4rem;
+            font-weight: 900;
+            font-family: 'Nunito', Arial, sans-serif;
+            background: #FFF8E8;
+            border: 4px solid #111111;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .level-btn:hover {
+            background: #FF9418;
+            color: #FFF8E8;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .level-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Progress */
+        .progress-container {
+            position: fixed;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FFF8E8;
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #FFD85A;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #6B3FA0;
+            transform: scale(1.3);
+        }
+
+        .dot.completed {
+            background: #4CAF50;
+        }
+
+        .score-display {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #6B3FA0;
+        }
+
+        /* Level 1 - Word Card */
+        .word-card {
+            background: #FFF8E8;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 100%;
+            margin-top: 80px;
+        }
+
+        .word-card-image {
+            width: 100%;
+            max-width: 300px;
+            height: 225px;
+            object-fit: cover;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            border: 4px solid #FF9418;
+        }
+
+        .word-norwegian {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #111111;
+            margin-bottom: 10px;
+        }
+
+        .word-article {
+            color: #6B3FA0;
+            font-weight: 800;
+        }
+
+        .word-russian {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #FF9418;
+            margin-bottom: 20px;
+        }
+
+        /* Level 2 - Spider Web Layout */
+        .level2-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            margin-top: 70px;
+            gap: 0;
+        }
+
+        .level2-card {
+            background: #FFF8E8;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .level2-card-image {
+            width: 100%;
+            max-width: 200px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            border: 3px solid #FF9418;
+        }
+
+        .level2-word-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #111111;
+            margin-bottom: 15px;
+        }
+
+        .article-selection {
+            margin: 15px 0;
+        }
+
+        .article-selection p {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #111111;
+        }
+
+        .article-options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .article-btn {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            background: #FFF8E8;
+            border: 3px solid #FF9418;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', Arial, sans-serif;
+        }
+
+        .article-btn:hover {
+            background: #FF9418;
+            color: #FFF8E8;
+            transform: scale(1.05);
+        }
+
+        .article-btn.selected {
+            background: #6B3FA0;
+            color: #FFF8E8;
+            border-color: #6B3FA0;
+        }
+
+        /* Поле ответа - к нему крепятся ниточки */
+        .answer-area {
+            min-height: 70px;
+            background: #FFD85A;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0 0 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+            border: 3px dashed #FF9418;
+            position: relative;
+            z-index: 10;
+        }
+
+        .answer-letter {
+            width: 55px;
+            height: 55px;
+            background: #6B3FA0;
+            color: #FFF8E8;
+            font-size: 1.8rem;
+            font-weight: 900;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #111111;
+        }
+
+        .answer-letter:hover {
+            transform: scale(1.1);
+        }
+
+        /* Зона с буквами на паутинке - БЕЗ РАМКИ */
+        .letters-zone {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            height: 200px;
+            margin-top: 0;
+            overflow: visible;
+        }
+
+        /* SVG для ниточек */
+        .web-strings-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+            overflow: visible;
+        }
+
+        /* Буквы на паутинке */
+        .web-letter {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #FF9418;
+            color: #FFF8E8;
+            font-size: 2rem;
+            font-weight: 900;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            border: 3px solid #111111;
+            z-index: 10;
+            animation: swing 2.5s ease-in-out infinite;
+            transform-origin: top center;
+        }
+
+        .web-letter:hover {
+            transform: scale(1.15);
+            background: #6B3FA0;
+        }
+
+        .web-letter.used {
+            opacity: 0.15;
+            pointer-events: none;
+            animation: none;
+        }
+
+        @keyframes swing {
+            0%, 100% { 
+                transform: rotate(-8deg) translateY(0); 
+            }
+            50% { 
+                transform: rotate(8deg) translateY(-5px); 
+            }
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            font-family: 'Nunito', Arial, sans-serif;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            min-height: 45px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .btn-primary {
+            background: #111111;
+            color: #FFF8E8;
+        }
+
+        .btn-primary:hover {
+            background: #6B3FA0;
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary {
+            background: #FFF8E8;
+            color: #111111;
+            border: 3px solid #FF9418;
+        }
+
+        .btn-secondary:hover {
+            background: #FF9418;
+            color: #FFF8E8;
+        }
+
+        .btn-large {
+            padding: 15px 30px;
+            font-size: 1.3rem;
+        }
+
+        .btn-hint {
+            width: 100%;
+            max-width: 300px;
+            padding: 15px;
+            font-size: 1.2rem;
+            background: #FFF8E8;
+            border: 3px solid #FF9418;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: 'Nunito', Arial, sans-serif;
+            font-weight: 800;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .btn-hint:hover {
+            background: #FF9418;
+            color: #FFF8E8;
+        }
+
+        .btn-hint:active {
+            transform: scale(0.95);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        /* Choice Cards Level 3 */
+        .choice-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 450px;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .choice-card {
+            background: #FFF8E8;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        }
+
+        .choice-card:hover {
+            transform: scale(1.05);
+        }
+
+        .choice-card:active {
+            transform: scale(0.95);
+        }
+
+        .choice-card.correct {
+            background: #4CAF50;
+            animation: bounce 0.5s ease;
+        }
+
+        .choice-card.wrong {
+            background: #f44336;
+            animation: shake 0.5s ease;
+        }
+
+        .choice-card-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 3px solid #FF9418;
+        }
+
+        /* Feedback */
+        .feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #FFF8E8;
+            padding: 25px 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            font-size: 1.8rem;
+            font-weight: 900;
+            z-index: 1000;
+            display: none;
+            animation: bounce 0.5s ease;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        /* Results */
+        .results-container {
+            background: #FFF8E8;
+            padding: 30px;
+            border-radius: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+            margin-top: 80px;
+        }
+
+        .results-title {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #111111;
+            margin-bottom: 15px;
+        }
+
+        .results-score {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #6B3FA0;
+            margin: 15px 0;
+        }
+
+        .results-badge {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #FF9418;
+            margin: 15px 0;
+        }
+
+        .learned-words {
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .learned-word {
+            padding: 8px;
+            margin: 8px 0;
+            background: #FFD85A;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        /* Video Container */
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .video-container.show {
+            display: flex;
+        }
+
+        .video-container video {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 20px;
+        }
+
+        .video-close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            background: #FFF8E8;
+            border: 3px solid #111111;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2001;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 1.5rem;
+                padding: 10px 25px;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .level-btn {
+                padding: 15px 25px;
+                font-size: 1.2rem;
+            }
+
+            .word-card {
+                margin-top: 70px;
+                padding: 20px;
+            }
+
+            .word-card-image {
+                height: 180px;
+            }
+
+            .word-norwegian {
+                font-size: 2rem;
+            }
+
+            .word-russian {
+                font-size: 1.3rem;
+            }
+
+            .level2-container {
+                margin-top: 60px;
+            }
+
+            .level2-card-image {
+                height: 120px;
+            }
+
+            .web-letter {
+                width: 50px;
+                height: 50px;
+                font-size: 1.6rem;
+            }
+
+            .letters-zone {
+                height: 180px;
+            }
+
+            .choice-cards {
+                gap: 10px;
+            }
+
+            .choice-card-image {
+                height: 100px;
+            }
+
+            .progress-container {
+                padding: 8px 15px;
+            }
+
+            .score-display {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.2rem;
+                padding: 8px 18px;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+                padding: 8px 15px;
+            }
+
+            .name-input-container {
+                padding: 15px;
+            }
+
+            .level-btn {
+                padding: 12px 20px;
+                font-size: 1.1rem;
+            }
+
+            .word-card {
+                margin-top: 65px;
+                padding: 15px;
+            }
+
+            .word-card-image {
+                height: 150px;
+            }
+
+            .level2-card-image {
+                height: 100px;
+            }
+
+            .letters-zone {
+                height: 160px;
+            }
+
+            .web-letter {
+                width: 45px;
+                height: 45px;
+                font-size: 1.4rem;
+            }
+
+            .answer-letter {
+                width: 45px;
+                height: 45px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Single Background -->
+    <div class="bg-image" id="bg-image"></div>
+
+    <!-- Home Button -->
+    <div class="home-btn" id="home-btn" title="Tilbake til start">
+        🏠
+    </div>
+
+    <!-- Start Screen -->
+    <div id="start-screen" class="screen active">
+        <div class="start-container">
+            <h1 class="main-title">KNASK ELLER KNEP!</h1>
+            <div class="subtitle">Lær norske Halloween-ord!</div>
+
+            <div class="name-input-container">
+                <h2>Kva heiter du?</h2>
+                <input type="text" class="name-input" id="name-input" placeholder="Skriv namnet ditt">
+                <div class="welcome-message" id="welcome-message"></div>
+            </div>
+
+            <div class="level-buttons">
+                <button class="level-btn" id="level1-btn">Lær orda</button>
+                <button class="level-btn" id="level2-btn">Bygg ordet</button>
+                <button class="level-btn" id="level3-btn">Høyr og finn</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level 1 Screen -->
+    <div id="level1-screen" class="screen">
+        <div class="progress-container">
+            <div class="progress-dots" id="level1-dots"></div>
+            <div class="score-display">⭐ <span id="level1-score">0</span></div>
+        </div>
+
+        <div class="word-card" id="level1-card">
+            <img class="word-card-image" id="level1-image" src="" alt="Word image">
+            <div class="word-norwegian">
+                <span class="word-article" id="level1-article">eit</span>
+                <span id="level1-word">gresskar</span>
+            </div>
+            <div class="word-russian" id="level1-russian">тыква</div>
+            <button class="btn btn-secondary" id="level1-speak-btn">
+                🔊 Høyr ordet
+            </button>
+        </div>
+
+        <button class="btn btn-primary btn-large" id="level1-next-btn" style="margin-top: 20px;">
+            Neste →
+        </button>
+    </div>
+
+    <!-- Level 2 Screen -->
+    <div id="level2-screen" class="screen">
+        <div class="progress-container">
+            <div class="progress-dots" id="level2-dots"></div>
+            <div class="score-display">⭐ <span id="level2-score">0</span></div>
+        </div>
+
+        <div class="level2-container">
+            <div class="level2-card">
+                <img class="level2-card-image" id="level2-image" src="" alt="Word image">
+                <div class="level2-word-title" id="level2-russian">тыква</div>
+                
+                <div class="article-selection" id="level2-article-section">
+                    <p>Vel rett artikkel:</p>
+                    <div class="article-options" id="level2-articles">
+                        <button class="article-btn" data-article="ein">ein</button>
+                        <button class="article-btn" data-article="ei">ei</button>
+                        <button class="article-btn" data-article="eit">eit</button>
+                    </div>
+                </div>
+
+                <div class="answer-area" id="level2-answer"></div>
+            </div>
+
+            <!-- Зона с буквами без рамки -->
+            <div class="letters-zone" id="letters-zone">
+                <svg class="web-strings-svg" id="web-strings-svg"></svg>
+            </div>
+
+            <button class="btn-hint" id="level2-hint-btn">
+                💡 Подсказка
+            </button>
+
+            <div class="button-group">
+                <button class="btn btn-primary" id="level2-check-btn">
+                    Sjekk ✓
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level 3 Screen -->
+    <div id="level3-screen" class="screen">
+        <div class="progress-container">
+            <div class="progress-dots" id="level3-dots"></div>
+            <div class="score-display">⭐ <span id="level3-score">0</span></div>
+        </div>
+
+        <div class="word-card" style="margin-top: 80px;">
+            <h2 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 15px;">
+                👻 NIVÅ 3 — HØYR OG FINN
+            </h2>
+            <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 20px;">
+                Høyr godt og finn rett bilete!
+            </p>
+
+            <button class="btn btn-secondary btn-large" id="level3-speak-btn" style="margin-bottom: 20px;">
+                🔊 Høyr ein gong til
+            </button>
+
+            <div class="choice-cards" id="level3-choices"></div>
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen" class="screen">
+        <div class="results-container">
+            <div class="results-title" id="results-title">🎃 GRATULERER!</div>
+            <p style="font-size: 1.3rem; font-weight: 700; margin-bottom: 15px;">Du klarte det! 👻</p>
+            <div class="results-score">⭐ <span id="results-score">0</span> / 30</div>
+            <div class="results-badge" id="results-badge"></div>
+
+            <div class="learned-words" id="learned-words"></div>
+
+            <button class="btn btn-secondary" id="speak-all-btn" style="margin-bottom: 15px;">
+                🔊 Høyr alle orda
+            </button>
+
+            <button class="btn btn-primary btn-large" id="restart-btn">
+                🎃 Spel ein gong til
+            </button>
+        </div>
+    </div>
+
+    <!-- Video Container -->
+    <div class="video-container" id="video-container">
+        <button class="video-close-btn" id="video-close-btn">✕</button>
+        <video id="final-video" controls>
+            <source src="final-congratulations.mp4" type="video/mp4">
+            Nettlesaren din støttar ikkje video.
+        </video>
+    </div>
+
+    <!-- Feedback -->
+    <div class="feedback" id="feedback"></div>
+
+    <script>
+        // Game Data - PNG файлы карточек
+        const words = [
+            { nn: "eit gresskar", word: "gresskar", article: "eit", ru: "тыква", emoji: "🎃", image: "card-1.png" },
+            { nn: "eit spøkelse", word: "spøkelse", article: "eit", ru: "привидение", emoji: "👻", image: "card-2.png" },
+            { nn: "ei heks", word: "heks", article: "ei", ru: "ведьма", emoji: "🧙‍♀️", image: "card-3.png" },
+            { nn: "ein vampyr", word: "vampyr", article: "ein", ru: "вампир", emoji: "", image: "card-4.png" },
+            { nn: "ein zombie", word: "zombie", article: "ein", ru: "зомби", emoji: "🧟", image: "card-5.png" },
+            { nn: "eit skjelett", word: "skjelett", article: "eit", ru: "скелет", emoji: "💀", image: "card-6.png" },
+            { nn: "ein edderkopp", word: "edderkopp", article: "ein", ru: "паук", emoji: "🕷️", image: "card-7.png" },
+            { nn: "ei flaggermus", word: "flaggermus", article: "ei", ru: "летучая мышь", emoji: "🦇", image: "card-8.png" },
+            { nn: "godteri", word: "godteri", article: "", ru: "сладости / конфеты", emoji: "🍬", image: "card-9.png" },
+            { nn: "ein svart katt", word: "svart katt", article: "ein", ru: "черный кот", emoji: "🐈‍", image: "card-10.png" }
+        ];
+
+        // Game State
+        let playerName = '';
+        let currentLevel = 0;
+        let currentWordIndex = 0;
+        let scores = { level1: 0, level2: 0, level3: 0 };
+        let totalScore = 0;
+        let level2Answer = [];
+        let level2SelectedArticle = '';
+        let level2HintUsed = false;
+
+        // Audio Context
+        let audioContext;
+
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        // Sound Effects
+        function correctSound() {
+            initAudio();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1);
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+
+        function wrongSound() {
+            initAudio();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(150, audioContext.currentTime + 0.1);
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        }
+
+        function victorySound() {
+            initAudio();
+            const notes = [523.25, 659.25, 783.99, 1046.50];
+            notes.forEach((freq, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime + index * 0.15);
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime + index * 0.15);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + index * 0.15 + 0.3);
+                
+                oscillator.start(audioContext.currentTime + index * 0.15);
+                oscillator.stop(audioContext.currentTime + index * 0.15 + 0.3);
+            });
+        }
+
+        // Speech Synthesis
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'nn-NO';
+                utterance.rate = 0.8;
+                
+                const voices = speechSynthesis.getVoices();
+                const nnVoice = voices.find(voice => voice.lang.includes('nn'));
+                const nbVoice = voices.find(voice => voice.lang.includes('nb'));
+                
+                if (nnVoice) {
+                    utterance.voice = nnVoice;
+                } else if (nbVoice) {
+                    utterance.voice = nbVoice;
+                }
+                
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Screen Management
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            
+            const homeBtn = document.getElementById('home-btn');
+            if (screenId === 'start-screen') {
+                homeBtn.style.display = 'none';
+            } else {
+                homeBtn.style.display = 'flex';
+            }
+        }
+
+        // Home button
+        document.getElementById('home-btn').addEventListener('click', () => {
+            showScreen('start-screen');
+        });
+
+        // Progress Dots
+        function createProgressDots(containerId, total, current) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for (let i = 0; i < total; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                if (i < current) dot.classList.add('completed');
+                if (i === current) dot.classList.add('active');
+                container.appendChild(dot);
+            }
+        }
+
+        // Confetti
+        function createConfetti() {
+            const colors = ['#FF9418', '#FFD85A', '#6B3FA0', '#4CAF50', '#f44336'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear`;
+                confetti.style.animationDelay = Math.random() * 2 + 's';
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+
+        // Feedback
+        function showFeedback(message, duration = 1500) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.classList.add('show');
+            setTimeout(() => feedback.classList.remove('show'), duration);
+        }
+
+        // Start Screen
+        document.getElementById('level1-btn').addEventListener('click', () => {
+            const nameInput = document.getElementById('name-input');
+            playerName = nameInput.value.trim() || 'Spelar';
+            localStorage.setItem('playerName', playerName);
+            startLevel(1);
+        });
+
+        document.getElementById('level2-btn').addEventListener('click', () => {
+            const nameInput = document.getElementById('name-input');
+            playerName = nameInput.value.trim() || 'Spelar';
+            localStorage.setItem('playerName', playerName);
+            startLevel(2);
+        });
+
+        document.getElementById('level3-btn').addEventListener('click', () => {
+            const nameInput = document.getElementById('name-input');
+            playerName = nameInput.value.trim() || 'Spelar';
+            localStorage.setItem('playerName', playerName);
+            startLevel(3);
+        });
+
+        document.getElementById('name-input').addEventListener('input', (e) => {
+            const welcomeMessage = document.getElementById('welcome-message');
+            if (e.target.value.trim()) {
+                welcomeMessage.textContent = `Hei, ${e.target.value.trim()}! 👻`;
+                welcomeMessage.style.display = 'block';
+            } else {
+                welcomeMessage.style.display = 'none';
+            }
+        });
+
+        // Load saved name
+        const savedName = localStorage.getItem('playerName');
+        if (savedName) {
+            document.getElementById('name-input').value = savedName;
+            document.getElementById('welcome-message').textContent = `Velkomen tilbake, ${savedName}! 🎃`;
+            document.getElementById('welcome-message').style.display = 'block';
+        }
+
+        function startLevel(level) {
+            currentLevel = level;
+            currentWordIndex = 0;
+            
+            if (level === 1) {
+                showScreen('level1-screen');
+                initLevel1();
+            } else if (level === 2) {
+                showScreen('level2-screen');
+                initLevel2();
+            } else if (level === 3) {
+                showScreen('level3-screen');
+                initLevel3();
+            }
+        }
+
+        // Level 1
+        function initLevel1() {
+            createProgressDots('level1-dots', words.length, currentWordIndex);
+            document.getElementById('level1-score').textContent = scores.level1;
+            showWord1();
+        }
+
+        function showWord1() {
+            const word = words[currentWordIndex];
+            document.getElementById('level1-image').src = word.image;
+            document.getElementById('level1-article').textContent = word.article;
+            document.getElementById('level1-word').textContent = word.word;
+            document.getElementById('level1-russian').textContent = word.ru;
+            
+            createProgressDots('level1-dots', words.length, currentWordIndex);
+        }
+
+        document.getElementById('level1-speak-btn').addEventListener('click', () => {
+            const word = words[currentWordIndex];
+            speak(word.nn);
+            
+            const image = document.getElementById('level1-image');
+            image.style.animation = 'none';
+            setTimeout(() => image.style.animation = 'bounce 0.5s ease', 10);
+        });
+
+        document.getElementById('level1-next-btn').addEventListener('click', () => {
+            scores.level1++;
+            currentWordIndex++;
+            
+            if (currentWordIndex < words.length) {
+                showWord1();
+            } else {
+                showFeedback('Flott! ', 2000);
+                setTimeout(() => startLevel(2), 2000);
+            }
+        });
+
+        // Level 2
+        function initLevel2() {
+            createProgressDots('level2-dots', words.length, currentWordIndex);
+            document.getElementById('level2-score').textContent = scores.level2;
+            showWord2();
+        }
+
+        function showWord2() {
+            const word = words[currentWordIndex];
+            document.getElementById('level2-image').src = word.image;
+            document.getElementById('level2-russian').textContent = word.ru;
+            
+            level2Answer = [];
+            level2SelectedArticle = '';
+            level2HintUsed = false;
+            
+            document.getElementById('level2-answer').innerHTML = '';
+            document.querySelectorAll('.article-btn').forEach(btn => btn.classList.remove('selected'));
+            
+            if (word.article) {
+                document.getElementById('level2-article-section').style.display = 'block';
+            } else {
+                document.getElementById('level2-article-section').style.display = 'none';
+            }
+            
+            createSpiderWebLetters(word.word);
+            createProgressDots('level2-dots', words.length, currentWordIndex);
+        }
+
+        // Создание букв на паутинке - ВРАЗБРОС, подвешены к answer-area
+        function createSpiderWebLetters(word) {
+            const lettersZone = document.getElementById('letters-zone');
+            const svg = document.getElementById('web-strings-svg');
+            const answerArea = document.getElementById('level2-answer');
+            
+            // Удаляем старые буквы и ниточки
+            lettersZone.querySelectorAll('.web-letter').forEach(el => el.remove());
+            svg.innerHTML = '';
+            
+            const letters = word.split('');
+            // Перемешиваем буквы вразброс
+            const shuffledLetters = [...letters].sort(() => Math.random() - 0.5);
+            
+            const zoneWidth = lettersZone.offsetWidth;
+            const zoneHeight = lettersZone.offsetHeight;
+            
+            // Параметры букв
+            const letterWidth = 60;
+            const letterHeight = 60;
+            const gap = 10;
+            const totalLettersWidth = (shuffledLetters.length * letterWidth) + ((shuffledLetters.length - 1) * gap);
+            const startX = (zoneWidth - totalLettersWidth) / 2;
+            
+            // Ниточки крепятся к нижней части answer-area
+            const answerRect = answerArea.getBoundingClientRect();
+            const zoneRect = lettersZone.getBoundingClientRect();
+            const attachY = answerRect.bottom - zoneRect.top;
+            
+            shuffledLetters.forEach((letter, index) => {
+                const letterX = startX + (index * (letterWidth + gap));
+                const letterCenterX = letterX + (letterWidth / 2);
+                
+                // Случайная длина ниточки для разнообразия (40-90px)
+                const stringLength = 40 + Math.random() * 50;
+                const letterY = attachY + stringLength;
+                
+                // Создаём ниточку в SVG
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', letterCenterX);
+                line.setAttribute('y1', attachY);
+                line.setAttribute('x2', letterCenterX);
+                line.setAttribute('y2', letterY);
+                line.setAttribute('stroke', '#111111');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('opacity', '0.5');
+                line.setAttribute('stroke-dasharray', '4,2');
+                svg.appendChild(line);
+                
+                // Создаём букву
+                const webLetter = document.createElement('div');
+                webLetter.className = 'web-letter';
+                webLetter.textContent = letter;
+                webLetter.dataset.index = index;
+                webLetter.dataset.originalIndex = letters.indexOf(letter);
+                webLetter.style.left = letterX + 'px';
+                webLetter.style.top = letterY + 'px';
+                webLetter.style.animationDelay = (index * 0.3 + Math.random() * 0.5) + 's';
+                webLetter.addEventListener('click', () => addLetterFromWeb(letter, index));
+                lettersZone.appendChild(webLetter);
+            });
+        }
+
+        function addLetterFromWeb(letter, index) {
+            const webLetter = document.querySelector(`.web-letter[data-index="${index}"]`);
+            if (webLetter.classList.contains('used')) return;
+            
+            webLetter.classList.add('used');
+            level2Answer.push({ letter, index });
+            
+            const answerArea = document.getElementById('level2-answer');
+            const answerLetter = document.createElement('div');
+            answerLetter.className = 'answer-letter';
+            answerLetter.textContent = letter;
+            answerLetter.dataset.answerIndex = level2Answer.length - 1;
+            answerLetter.addEventListener('click', () => removeLetter(level2Answer.length - 1));
+            answerArea.appendChild(answerLetter);
+        }
+
+        function removeLetter(answerIndex) {
+            const answerLetter = document.querySelector(`.answer-letter[data-answer-index="${answerIndex}"]`);
+            if (answerLetter) {
+                const tileIndex = level2Answer[answerIndex].index;
+                const webLetter = document.querySelector(`.web-letter[data-index="${tileIndex}"]`);
+                webLetter.classList.remove('used');
+                
+                level2Answer.splice(answerIndex, 1);
+                document.getElementById('level2-answer').innerHTML = '';
+                level2Answer.forEach((item, idx) => {
+                    const letter = document.createElement('div');
+                    letter.className = 'answer-letter';
+                    letter.textContent = item.letter;
+                    letter.dataset.answerIndex = idx;
+                    letter.addEventListener('click', () => removeLetter(idx));
+                    document.getElementById('level2-answer').appendChild(letter);
+                });
+            }
+        }
+
+        document.querySelectorAll('.article-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.article-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                level2SelectedArticle = btn.dataset.article;
+            });
+        });
+
+        document.getElementById('level2-hint-btn').addEventListener('click', () => {
+            const word = words[currentWordIndex].word;
+            if (level2Answer.length < word.length) {
+                const nextLetter = word[level2Answer.length];
+                const webLetters = document.querySelectorAll('.web-letter:not(.used)');
+                webLetters.forEach(webLetter => {
+                    if (webLetter.textContent === nextLetter) {
+                        webLetter.style.background = '#6B3FA0';
+                        setTimeout(() => webLetter.style.background = '#FF9418', 1000);
+                    }
+                });
+                level2HintUsed = true;
+            }
+        });
+
+        document.getElementById('level2-check-btn').addEventListener('click', () => {
+            const word = words[currentWordIndex];
+            const answer = level2Answer.map(item => item.letter).join('');
+            
+            let articleCorrect = true;
+            if (word.article) {
+                articleCorrect = level2SelectedArticle === word.article;
+            }
+            
+            if (answer === word.word && articleCorrect) {
+                correctSound();
+                createConfetti();
+                showFeedback('🎉 Flott!', 1500);
+                
+                let points = 1;
+                if (!level2HintUsed) points++;
+                scores.level2 += points;
+                document.getElementById('level2-score').textContent = scores.level2;
+                
+                setTimeout(() => {
+                    currentWordIndex++;
+                    if (currentWordIndex < words.length) {
+                        showWord2();
+                    } else {
+                        showFeedback('Bra jobba! 🎃', 2000);
+                        setTimeout(() => startLevel(3), 2000);
+                    }
+                }, 1500);
+            } else {
+                wrongSound();
+                showFeedback('Prøv igjen! 👻', 1500);
+                const card = document.querySelector('#level2-screen .level2-card');
+                card.style.animation = 'shake 0.5s ease';
+                setTimeout(() => card.style.animation = '', 500);
+                
+                setTimeout(() => {
+                    level2Answer = [];
+                    document.getElementById('level2-answer').innerHTML = '';
+                    document.querySelectorAll('.web-letter').forEach(webLetter => webLetter.classList.remove('used'));
+                }, 1500);
+            }
+        });
+
+        // Level 3
+        function initLevel3() {
+            createProgressDots('level3-dots', words.length, currentWordIndex);
+            document.getElementById('level3-score').textContent = scores.level3;
+            showWord3();
+        }
+
+        function showWord3() {
+            const word = words[currentWordIndex];
+            const choices = document.getElementById('level3-choices');
+            choices.innerHTML = '';
+            
+            const correctIndex = Math.floor(Math.random() * 4);
+            const usedIndices = new Set([currentWordIndex]);
+            
+            for (let i = 0; i < 4; i++) {
+                const card = document.createElement('div');
+                card.className = 'choice-card';
+                
+                let wordIndex;
+                if (i === correctIndex) {
+                    wordIndex = currentWordIndex;
+                } else {
+                    do {
+                        wordIndex = Math.floor(Math.random() * words.length);
+                    } while (usedIndices.has(wordIndex));
+                    usedIndices.add(wordIndex);
+                }
+                
+                const choiceWord = words[wordIndex];
+                card.innerHTML = `<img class="choice-card-image" src="${choiceWord.image}" alt="${choiceWord.ru}">`;
+                card.dataset.index = wordIndex;
+                card.addEventListener('click', () => checkAnswer3(card, wordIndex, currentWordIndex));
+                choices.appendChild(card);
+            }
+            
+            setTimeout(() => speak(word.nn), 500);
+            createProgressDots('level3-dots', words.length, currentWordIndex);
+        }
+
+        function checkAnswer3(card, selectedIndex, correctIndex) {
+            if (selectedIndex === correctIndex) {
+                card.classList.add('correct');
+                correctSound();
+                createConfetti();
+                showFeedback('⭐ Bra jobba!', 1500);
+                scores.level3++;
+                document.getElementById('level3-score').textContent = scores.level3;
+                
+                setTimeout(() => {
+                    currentWordIndex++;
+                    if (currentWordIndex < words.length) {
+                        showWord3();
+                    } else {
+                        showResults();
+                    }
+                }, 1500);
+            } else {
+                card.classList.add('wrong');
+                wrongSound();
+                showFeedback('Prøv igjen! 👻', 1500);
+                setTimeout(() => card.classList.remove('wrong'), 500);
+            }
+        }
+
+        document.getElementById('level3-speak-btn').addEventListener('click', () => {
+            const word = words[currentWordIndex];
+            speak(word.nn);
+        });
+
+        // Results & Video
+        function showResults() {
+            totalScore = scores.level1 + scores.level2 + scores.level3;
+            localStorage.setItem('bestScore', Math.max(totalScore, parseInt(localStorage.getItem('bestScore') || 0)));
+            
+            showScreen('results-screen');
+            document.getElementById('results-title').textContent = `🎃 GRATULERER, ${playerName.toUpperCase()}!`;
+            document.getElementById('results-score').textContent = totalScore;
+            
+            let badge;
+            if (totalScore >= 27) badge = '🏆 Halloween Master!';
+            else if (totalScore >= 22) badge = '🎃 Halloween Star!';
+            else if (totalScore >= 16) badge = ' Great Job!';
+            else badge = '🕷️ Keep Learning!';
+            
+            document.getElementById('results-badge').textContent = badge;
+            
+            const learnedWords = document.getElementById('learned-words');
+            learnedWords.innerHTML = '<h3 style="font-size: 1.3rem; font-weight: 800; margin-bottom: 12px;">Du har lært:</h3>';
+            words.forEach(word => {
+                const div = document.createElement('div');
+                div.className = 'learned-word';
+                div.textContent = `${word.emoji} ${word.nn} — ${word.ru}`;
+                learnedWords.appendChild(div);
+            });
+            
+            createConfetti();
+            victorySound();
+
+            // Auto-play final video after 3 seconds
+            setTimeout(() => {
+                playFinalVideo();
+            }, 3000);
+        }
+
+        function playFinalVideo() {
+            const videoContainer = document.getElementById('video-container');
+            const video = document.getElementById('final-video');
+            
+            videoContainer.classList.add('show');
+            video.play();
+        }
+
+        document.getElementById('video-close-btn').addEventListener('click', () => {
+            const videoContainer = document.getElementById('video-container');
+            const video = document.getElementById('final-video');
+            
+            video.pause();
+            video.currentTime = 0;
+            videoContainer.classList.remove('show');
+        });
+
+        document.getElementById('speak-all-btn').addEventListener('click', () => {
+            let delay = 0;
+            words.forEach((word, index) => {
+                setTimeout(() => speak(word.nn), delay);
+                delay += 2000;
+            });
+        });
+
+        document.getElementById('restart-btn').addEventListener('click', () => {
+            scores = { level1: 0, level2: 0, level3: 0 };
+            currentWordIndex = 0;
+            showScreen('start-screen');
+        });
+
+        // Initialize voices
+        if ('speechSynthesis' in window) {
+            speechSynthesis.getVoices();
+            speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+        }
+    </script>
+</body>
+</html>
